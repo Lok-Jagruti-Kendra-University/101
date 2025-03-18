@@ -30,6 +30,7 @@ jobs:
             -Dsonar.projectKey=Lok-Jagruti-Kendra-University_101
             -Dsonar.organization=lok-jagruti-kendra-university            
             -Dsonar.token=44008bdc256019db2fd5c2fc7693fb2a319dc611
+            -Dsonar.language=java
             # Comma-separated paths to directories containing main source files.
             #-Dsonar.sources= # optional, default is project base directory
             # Comma-separated paths to directories containing test source files.
