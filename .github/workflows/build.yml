@@ -1,0 +1,64 @@
+
+name: Build
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  evaluate_project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests pandas openpyxl bs4
+
+      - name: Aggregate Scores
+        run: python calculate_scores.py  # Custom script for scoring
+        
+      - name: overall Scores
+        run: python overall.py  # Custom script for scoring
+
+      - name: Debug
+        run: ls -R   
+            
+      - name: Upload SonarCloud Summary Excel
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarcloud_summary
+          path: sonarcloud_summary.xlsx
+
+      - name: Upload SonarCloud Summary csv
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarcloud_overall
+          path: sonarcloud_all_projects_analysis.csv
+      
+  sonarqube:
+    name: SonarQube
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      
+      # Install Java (SonarCloud needs JDK 17)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${ secrets.SONAR_TOKEN }
