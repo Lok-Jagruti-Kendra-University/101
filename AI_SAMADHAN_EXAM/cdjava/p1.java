@@ -169,6 +169,7 @@ class ExamScheduler {
             workbook.write(fileOut);
             workbook.close();
             System.out.println("Exam schedule exported to " + fileName);
+            System.out.println("Hello World");
         } catch (IOException e) {
             System.out.println("Error exporting to Excel: " + e.getMessage());
         }
