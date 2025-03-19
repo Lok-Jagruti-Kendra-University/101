@@ -15,6 +15,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Convert Jupyter Notebooks to Python
+        run: |
+          pip install nbconvert
+          find . -name "*.ipynb" -exec jupyter nbconvert --to script {} \;
+
+      - name: Set Up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: SonarCloud Scan
+        run: |
+          sonar-scanner 
+            -Dsonar.organization=lok-jagruti-kendra-university 
+            -Dsonar.projectKey=Lok-Jagruti-Kendra-University_101 
+            -Dsonar.host.url=https://sonarcloud.io 
+            -Dsonar.token=${ secrets.SONAR_TOKEN } 
+            -Dsonar.python.version=3.8 
+            -Dsonar.java.binaries=target/classes 
+            -Dsonar.inclusions=**/*.java,**/*.py,**/*.ipynb  
+            -Dsonar.sources=.
+
       - name: Analyze with SonarCloud
 
         # You can pin the exact commit or the version.
@@ -30,7 +55,6 @@ jobs:
             -Dsonar.projectKey=Lok-Jagruti-Kendra-University_101
             -Dsonar.organization=lok-jagruti-kendra-university            
             -Dsonar.token=44008bdc256019db2fd5c2fc7693fb2a319dc611
-            -Dsonar.language=java
             # Comma-separated paths to directories containing main source files.
             #-Dsonar.sources= # optional, default is project base directory
             # Comma-separated paths to directories containing test source files.
@@ -39,4 +63,4 @@ jobs:
             #-Dsonar.verbose= # optional, default is false
           # When you need the analysis to take place in a directory other than the one from which it was launched, default is .
           projectBaseDir: .
-            
+        
